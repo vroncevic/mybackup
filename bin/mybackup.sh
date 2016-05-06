@@ -26,7 +26,7 @@ TOOL_LOG=$TOOL_HOME/log
 
 declare -A ATMANAGER_USAGE=(
 	[TOOL_NAME]="__$TOOL_NAME"
-	[ARG2]="[OPTION] help"
+	[ARG1]="[OPTION] help"
 	[EX-PRE]="# Restart Apache Tomcat Server"
 	[EX]="__$TOOL_NAME restart"	
 )
