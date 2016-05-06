@@ -24,11 +24,11 @@ TOOL_HOME=$UTIL_ROOT/$TOOL_NAME/$TOOL_VERSION
 TOOL_CFG=$TOOL_HOME/conf/$TOOL_NAME.cfg
 TOOL_LOG=$TOOL_HOME/log
 
-declare -A ATMANAGER_USAGE=(
+declare -A MYBACKUP_USAGE=(
 	[TOOL_NAME]="__$TOOL_NAME"
 	[ARG1]="[OPTION] help"
-	[EX-PRE]="# Restart Apache Tomcat Server"
-	[EX]="__$TOOL_NAME restart"	
+	[EX-PRE]="# Get this info"
+	[EX]="__$TOOL_NAME help"	
 )
 
 declare -A LOG=(
@@ -42,16 +42,17 @@ TOOL_DEBUG="false"
 
 MYSQLDUMP="/usr/bin/mysqldump"
 MYSQLDUMP_ROOT_LOCATION="/path-to-folder/mysql"
+SHOW_DBS="SHOW DATABASES LIKE"
 
 #
 # @brief  Creating MySQL dump for database
-# @params Values required database name and SQL file name
+# @param  Value required SQL file name
 # @retval Success return 0, else 1
 #
 # @usage
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #
-# __mybackup 
+# __mybackup "SQL_FILE"
 # STATUS=$?
 #
 # if [ "$STATUS" -eq "$SUCCESS" ]; then
@@ -74,8 +75,11 @@ function __mybackup() {
 }
 
 #
-# @brief Main entry point
-# @param Value optional help
+# @brief   Main entry point
+# @param   Value optional help
+# @exitval Script tool mybackup exit with integer value
+#			0   - success operation 
+# 			127 - run as root user
 #
 printf "\n%s\n%s\n\n" "$TOOL_NAME $TOOL_VERSION" "`date`"
 HELP=$1
@@ -83,39 +87,40 @@ __checkroot
 STATUS=$?
 if [ "$STATUS" -eq "$SUCCESS" ]; then
     if [ "$HELP" == "help" ]; then
-        __usage $TOOL_USAGE
+        __usage $MYBACKUP_USAGE
     else
         __checktool "$MYSQLDUMP"
         STATUS=$?
         if [ "$STATUS" -eq "$NOT_SUCCESS" ]; then
             exit 127
         fi
-        FILE=nsfrobas.mysql.`date +"%Y%m%d"`
+        FILE=company.mysql.`date +"%Y%m%d"`
         DATABASE=XXX
-		# TODO set list of databases 
+		# TODO set array of databases 
         databases=( my_test my_test2 )
         for i in "${databases[@]}"
         do
             DATABASE=$i
-            RESULT=`mysql -uroot --skip-column-names -e "SHOW DATABASES LIKE '$DATABASE'"`
+            RESULT=`mysql -uroot --skip-column-names -e "$SHOW_DBS '$DATABASE'"`
             if [ "$RESULT" == "$DATABASE" ]; then
-                __mybackup "$MYSQLDUMP_ROOT_LOCATION/${FILE}_${DATABASE}"
+				SQL="$MYSQLDUMP_ROOT_LOCATION/${FILE}_${DATABASE}"
+                __mybackup "$SQL"
                 STATUS=$?
                 if [ "$STATUS" -eq "$SUCCESS" ]; then
 					if [ "$TOOL_DEBUG" == "true" ]; then
-                    	printf "%s\n" "Backup [$MYSQLDUMP_ROOT_LOCATION/${FILE}_${DATABASE}.gz] was created"
+                    	printf "%s\n" "Backup [${SQL}.gz] was created"
 					fi
-                    ls -l "$MYSQLDUMP_ROOT_LOCATION/${FILE}_${DATABASE}.gz"
+                    ls -l "${SQL}.gz"
                     LOG[FLAG]="info"
                     LOG[PATH]="$TOOL_LOG"
-                    LOG[MSG]="Backup [$MYSQLDUMP_ROOT_LOCATION/${FILE}_${DATABASE}.gz] was created"
+                    LOG[MSG]="Backup [${SQL}.gz] was created"
 					if [ "$TOOL_DEBUG" == "true" ]; then
 						printf "%s\n\n" "${LOG[MSG]}"
 					fi
                     __logging $LOG
                 else
 					if [ "$TOOL_DEBUG" == "true" ]; then
-                    	printf "%s\n\n" "[Error] Can't create SQL file [$MYSQLDUMP_ROOT_LOCATION/${FILE}_${DATABASE}]"
+                    	printf "%s\n\n" "[Error] Can't create SQL file [$SQL]"
 					fi
 					:
                 fi
@@ -129,8 +134,12 @@ if [ "$STATUS" -eq "$SUCCESS" ]; then
                 __logging $LOG
             fi
         done
+		if [ "$TOOL_DEBUG" == "true" ]; then
+			printf "%s\n\n" "[Done]"
+		fi
+		exit 0
     fi
 fi
 
-exit 0
+exit 127
 
