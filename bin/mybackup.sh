@@ -8,197 +8,132 @@
 #
 UTIL_ROOT=/root/scripts
 UTIL_VERSION=ver.1.0
-UTIL=$UTIL_ROOT/sh-util-srv/$UTIL_VERSION
-UTIL_LOG=$UTIL/log
+UTIL=${UTIL_ROOT}/sh_util/${UTIL_VERSION}
+UTIL_LOG=${UTIL}/log
 
-. $UTIL/bin/devel.sh
-. $UTIL/bin/usage.sh
-. $UTIL/bin/checkroot.sh
-. $UTIL/bin/checktool.sh
-. $UTIL/bin/logging.sh
-. $UTIL/bin/sendmail.sh
-. $UTIL/bin/loadconf.sh
-. $UTIL/bin/loadutilconf.sh
-. $UTIL/bin/progressbar.sh
+.	${UTIL}/bin/devel.sh
+.	${UTIL}/bin/usage.sh
+.	${UTIL}/bin/check_root.sh
+.	${UTIL}/bin/check_tool.sh
+.	${UTIL}/bin/check_op.sh
+.	${UTIL}/bin/logging.sh
+.	${UTIL}/bin/load_conf.sh
+.	${UTIL}/bin/load_util_conf.sh
+.	${UTIL}/bin/send_mail.sh
+.	${UTIL}/bin/progress_bar.sh
 
-MYBACKUP_NAME=mybackup
+MYBACKUP_TOOL=mybackup
 MYBACKUP_VERSION=ver.1.0
-MYBACKUP_HOME=$UTIL_ROOT/$MYBACKUP_NAME/$MYBACKUP_VERSION
-MYBACKUP_CFG=$MYBACKUP_HOME/conf/$MYBACKUP_NAME.cfg
-MYBACKUP_UTIL_CFG=$MYBACKUP_HOME/conf/${MYBACKUP_TOOL}_util.cfg
-MYBACKUP_LOG=$MYBACKUP_HOME/log
+MYBACKUP_HOME=${UTIL_ROOT}/${MYBACKUP_TOOL}/${MYBACKUP_VERSION}
+MYBACKUP_CFG=${MYBACKUP_HOME}/conf/${MYBACKUP_TOOL}.cfg
+MYBACKUP_UTIL_CFG=${MYBACKUP_HOME}/conf/${MYBACKUP_TOOL}_util.cfg
+MYBACKUP_LOG=${MYBACKUP_HOME}/log
+
+.	${MYBACKUP_HOME}/bin/backup.sh
 
 declare -A MYBACKUP_USAGE=(
-	[USAGE_TOOL]="$TOOL_NAME"
+	[USAGE_TOOL]="${MYBACKUP_TOOL}"
 	[USAGE_ARG1]="[OPTION] help"
 	[USAGE_EX_PRE]="# Get this info"
-	[USAGE_EX]="$TOOL_NAME help"	
+	[USAGE_EX]="${MYBACKUP_TOOL} help"
 )
 
-declare -A MYBACKUP_LOG=(
-	[LOG_TOOL]="$TOOL_NAME"
+declare -A MYBACKUP_LOGGING=(
+	[LOG_TOOL]="${MYBACKUP_TOOL}"
 	[LOG_FLAG]="info"
-	[LOG_PATH]="$TOOL_LOG"
+	[LOG_PATH]="${MYBACKUP_LOG}"
 	[LOG_MSGE]="None"
 )
 
 declare -A PB_STRUCTURE=(
-	[BAR_WIDTH]=50
-	[MAX_PERCENT]=100
+	[BW]=50
+	[MP]=100
 	[SLEEP]=0.01
 )
 
-TOOL_DEBUG="false"
-
-#
-# @brief  Creating MySQL dump for database
-# @param  Value required SQL file name and database name
-# @retval Success return 0, else 1
-#
-# @usage
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#
-# __backup "SQL_FILE" "$DATABASE"
-# STATUS=$?
-#
-# if [ $STATUS -eq $SUCCESS ]; then
-#   # true
-# else
-#   # false
-# fi
-#
-function __backup() {
-	local SQL_FILE=$1
-	local DATABASE=$2
-	if [ -n "$SQL_FILE" ] && [ -n "$DATABASE" ]; then
-		unalias rm     	   2> /dev/null
-		rm ${SQL_FILE}     2> /dev/null
-		rm ${SQL_FILE}.gz  2> /dev/null
-		eval "${configmybackuputil[MYSQLDUMP]} -uroot $DATABASE > $SQL_FILE"
-		gzip $SQL_FILE
-		return $SUCCESS
-	fi
-	return $NOT_SUCCESS
-}
+TOOL_DBG="false"
+TOOL_LOG="false"
+TOOL_NOTIFY="false"
 
 #
 # @brief   Main function
 # @param   Value optional help
 # @retval  Function __mybackup exit with integer value
 #			0   - tool finished with success operation 
-# 			128 - failed to load tool script configuration from file 
-# 			129 - failed to load tool script utilities configuration from file
-# 			130 - missing external tool mysqldump
+#			128 - failed to load tool script configuration from files
+#			129 - missing external tool mysqldump
 #
 function __mybackup() {
-	if [ "$HELP" == "help" ]; then
-        __usage MYBACKUP_USAGE
-    fi
-	local FUNC=${FUNCNAME[0]}
-	local MSG="Loading basic and util configuration"
-	printf "$SEND" "$MYBACKUP_TOOL" "$MSG"
-	__progressbar PB_STRUCTURE
-	printf "%s\n\n" ""
-	declare -A configmybackup=()
-	__loadconf $MYBACKUP_CFG configmybackup
-	local STATUS=$?
-	if [ $STATUS -eq $NOT_SUCCESS ]; then
-		MSG="Failed to load tool script configuration"
-		if [ "$TOOL_DBG" == "true" ]; then
-			printf "$DSTA" "$MYBACKUP_TOOL" "$FUNC" "$MSG"
-		else
-			printf "$SEND" "$MYBACKUP_TOOL" "$MSG"
-		fi
-		exit 128
+	if [ "${HELP}" == "help" ]; then
+		__usage MYBACKUP_USAGE
 	fi
-	declare -A configmybackuputil=()
-	__loadutilconf $MYBACKUP_UTIL_CFG configmybackuputil
+	local FUNC=${FUNCNAME[0]} MSG="None" STATUS_CONF STATUS_CONF_UTIL STATUS
+	MSG="Loading basic and util configuration!"
+	__info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+	__progress_bar PB_STRUCTURE
+	declare -A config_mybackup=()
+	__load_conf "$MYBACKUP_CFG" config_mybackup
+	STATUS_CONF=$?
+	declare -A config_mybackup_util=()
+	__load_util_conf "$MYBACKUP_UTIL_CFG" config_mybackup_util
+	STATUS_CONF_UTIL=$?
+	declare -A STATUS_STRUCTURE=([1]=$STATUS_CONF [2]=$STATUS_CONF_UTIL)
+	__check_status STATUS_STRUCTURE
 	STATUS=$?
 	if [ $STATUS -eq $NOT_SUCCESS ]; then
-		MSG="Failed to load tool script utilities configuration"
-		if [ "$TOOL_DBG" == "true" ]; then
-			printf "$DSTA" "$MYBACKUP_TOOL" "$FUNC" "$MSG"
-		else
-			printf "$SEND" "$MYBACKUP_TOOL" "$MSG"
-		fi
-		exit 129
+		MSG="Force exit!"
+		__info_debug_message_end "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+		exit 128
 	fi
-	local SHOW_DBS="SHOW DATABASES LIKE"
-    __checktool "${configmybackuputil[MYSQLDUMP]}"
-    STATUS=$?
-    if [ $STATUS -eq $NOT_SUCCESS ]; then
-        MSG="Missing external tool ${configmybackuputil[MYSQLDUMP]}"
-		if [ "${configmybackup[LOGGING]}" == "true" ]; then
-			MYBACKUP_LOGGING[LOG_MSGE]="$MSG"
-			MYBACKUP_LOGGING[LOG_FLAG]="error"
-			__logging MYBACKUP_LOGGING
-		fi
-		if [ "${configmybackup[EMAILING]}" == "true" ]; then
-			__sendmail "$MSG" "${configmybackup[ADMIN_EMAIL]}"
-		fi
-		return 130
-    fi
-    local FILE=company.mysql.`date +"%Y%m%d"`
-    local DATABASE=XXX
-	# TODO set array of databases 
-    local -a databases=( my_test my_test2 )
-    for i in "${databases[@]}"
-    do
-        DATABASE=$i
-        local RESULT=`mysql -uroot --skip-column-names -e "$SHOW_DBS '$DATABASE'"`
-        if [ "$RESULT" == "$DATABASE" ]; then
-			local SQL="$MYSQLDUMP_ROOT_LOCATION/${FILE}_${DATABASE}"
-            __backup "$SQL" "$DATABASE"
-            STATUS=$?
-            if [ $STATUS -eq $SUCCESS ]; then
+	TOOL_DBG=${config_mybackup[DEBUGGING]}
+	TOOL_LOG=${config_mybackup[LOGGING]}
+	TOOL_NOTIFY=${config_mybackup[EMAILING]}
+	local SHDBS="SHOW DATABASES LIKE" MYDUMP=${config_mybackup_util[MYSQLDUMP]}
+	__check_tool "${MYDUMP}"
+	STATUS=$?
+	if [ $STATUS -eq $NOT_SUCCESS ]; then
+		MSG="Force exit!"
+		__info_debug_message_end "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+		return 129
+	fi
+	local FILE=company.mysql.`date +"%Y%m%d"` DB=XXX
+	local DBS=${config_mybackup_util[MYSQL_DATABASES]}
+	local MYSQLDUMPDIR=${config_mybackup_util[MYSQLDUMP_ROOT_LOCATION]}
+	IFS=' ' read -ra databases <<< "${DBS}"
+	for i in "${databases[@]}"
+	do
+		DB=$i
+		local RESULT=`mysql -uroot -p --skip-column-names -e "${SHDBS} '${DB}'"`
+		if [ "${RESULT}" == "${DB}" ]; then
+			local SQL="${MYSQLDUMPDIR}/${FILE}_${DB}"
+			__backup "$SQL" "$DB"
+			STATUS=$?
+			if [ $STATUS -eq $SUCCESS ]; then
 				MSG="Backup [${SQL}.gz] was created"
-				if [ "$TOOL_DBG" == "true" ]; then
-					printf "$DSTA" "$MYBACKUP_TOOL" "$FUNC" "$MSG"
-				else
-					printf "$SEND" "$MYBACKUP_TOOL" "$MSG"
-				fi
-                ls -l "${SQL}.gz"
-                MYBACKUP_LOG[LOG_FLAG]="info"
-                MYBACKUP_LOG[LOG_MSGE]="Backup [${SQL}.gz] was created"
-                __logging MYBACKUP_LOG
+				__info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+				ls -l "${SQL}.gz"
+				MYBACKUP_LOGGING[LOG_FLAG]="info"
+				MYBACKUP_LOGGING[LOG_MSGE]="Backup [${SQL}.gz] was created"
+				__logging MYBACKUP_LOGGING
 				MSG="${MYBACKUP_LOG[LOG_MSGE]}"
-				if [ "$TOOL_DBG" == "true" ]; then
-					printf "$DSTA" "$MYBACKUP_TOOL" "$FUNC" "$MSG"
-				else
-					printf "$SEND" "$MYBACKUP_TOOL" "$MSG"
-				fi
-            else
-				MYBACKUP_LOG[LOG_FLAG]="error"
-		        MYBACKUP_LOG[LOG_MSGE]="Can't create SQL file [$SQL]"
-		        __logging MYBACKUP_LOG
-				MSG="${MYBACKUP_LOG[LOG_MSGE]}"
-				if [ "$TOOL_DBG" == "true" ]; then
-					printf "$DSTA" "$MYBACKUP_TOOL" "$FUNC" "$MSG"
-				else
-					printf "$SEND" "$MYBACKUP_TOOL" "$MSG"
-				fi
-				:
-            fi
-        else
-			MYBACKUP_LOG[LOG_FLAG]="error"
-            MYBACKUP_LOG[LOG_MSGE]="Database [$DATABASE] does not exist"
-            __logging MYBACKUP_LOG
-			MSG="${MYBACKUP_LOG[LOG_MSGE]}"
-			if [ "$TOOL_DBG" == "true" ]; then
-				printf "$DSTA" "$MYBACKUP_TOOL" "$FUNC" "$MSG"
+				__info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
 			else
-				printf "$SEND" "$MYBACKUP_TOOL" "$MSG"
+				MYBACKUP_LOGGING[LOG_FLAG]="error"
+				MYBACKUP_LOGGING[LOG_MSGE]="Can't create SQL file [$SQL]"
+				__logging MYBACKUP_LOGGING
+				MSG="${MYBACKUP_LOG[LOG_MSGE]}"
+				__info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
 			fi
-			if [ "${configmybackup[EMAILING]}" == "true" ]; then
-				__sendmail "$MSG" "${configmybackup[ADMIN_EMAIL]}"
-			fi
-        fi
-    done
-	if [ "$TOOL_DBG" == "true" ]; then
-		printf "$DSTA" "$MYBACKUP_TOOL" "$FUNC" "Done"
-	else
-		printf "$SEND" "$MYBACKUP_TOOL" "Done"
-	fi
+		else
+			MYBACKUP_LOGGING[LOG_FLAG]="error"
+			MYBACKUP_LOGGING[LOG_MSGE]="Database [$DB] does not exist"
+			__logging MYBACKUP_LOGGING
+			MSG="${MYBACKUP_LOG[LOG_MSGE]}"
+			__info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+			__send_mail "$MSG" "${config_mybackup_util[ADMIN_EMAIL]}"
+		fi
+	done
+	__info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
 	exit 0
 }
 
@@ -206,17 +141,16 @@ function __mybackup() {
 # @brief   Main entry point
 # @param   Value optional help
 # @exitval Script tool mybackup exit with integer value
-#			0   - tool finished with success operation 
-# 			127 - run tool script as root user from cli
-# 			128 - failed to load tool script configuration from file 
-# 			129 - failed to load tool script utilities configuration from file
-# 			130 - missing external tool mysqldump
+#			0   - tool finished with success operation
+#			127 - run tool script as root user from cli
+#			128 - failed to load tool script configuration from files
+#			129 - missing external tool mysqldump
 #
-printf "\n%s\n%s\n\n" "$MYBACKUP_NAME $MYBACKUP_VERSION" "`date`"
-__checkroot
+printf "\n%s\n%s\n\n" "${MYBACKUP_TOOL} ${MYBACKUP_VERSION}" "`date`"
+__check_root
 STATUS=$?
-if [ "$STATUS" -eq "$SUCCESS" ]; then
-    __mybackup $1
+if [ $STATUS -eq $SUCCESS ]; then
+	__mybackup $1
 fi
 
 exit 127

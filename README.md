@@ -1,4 +1,4 @@
-Backup mechanism MySQL DB (Bash scripts).
+Backup mechanism MySQL DB (Bash script).
 ================================================================================
 
 The README is used to introduce the tool and provide instructions on
@@ -20,7 +20,7 @@ DEPENDENCIES
 
 This tool requires these other modules and libraries:
 
-	sh-util https://github.com/vroncevic/sh-util
+	sh_util https://github.com/vroncevic/sh_util
 
 COPYRIGHT AND LICENCE
 
