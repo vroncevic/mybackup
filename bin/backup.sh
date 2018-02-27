@@ -19,27 +19,27 @@
 # STATUS=$?
 #
 # if [ $STATUS -eq $SUCCESS ]; then
-#	# true
+#    # true
 # else
-#	# false
+#    # false
 # fi
 #
-function __backup() {
-	local SQLF=$1 DB=$2 FUNC=${FUNCNAME[0]} MSG="None" STATUS
-	if [[ -n "${SQLF}" && -n "${DB}" ]]; then
-		MSG="Run backup mechanism"
-		__info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
-		unalias rm 2> /dev/null
-		rm ${SQLF} 2> /dev/null
-		rm ${SQLF}.gz 2> /dev/null
-		local MYDUMP=${config_mybackup_util[MYSQLDUMP]}
-		eval "${MYDUMP} -uroot ${DB} > ${SQLF}"
-		gzip $SQLF
-		__info_debug_message "Done" "$FUNC" "$MYBACKUP_TOOL"
-		return $SUCCESS
-	fi
-	MSG="Force exit!"
-	__info_debug_message_end "$MSG" "$FUNC" "$MYBACKUP_TOOL"
-	return $NOT_SUCCESS
+function __backup {
+    local SQLF=$1 DB=$2 FUNC=${FUNCNAME[0]} MSG="None" STATUS
+    if [[ -n "${SQLF}" && -n "${DB}" ]]; then
+        MSG="Run backup mechanism"
+        info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+        unalias rm 2> /dev/null
+        rm ${SQLF} 2> /dev/null
+        rm ${SQLF}.gz 2> /dev/null
+        local MYDUMP=${config_mybackup_util[MYSQLDUMP]}
+        eval "${MYDUMP} -uroot ${DB} > ${SQLF}"
+        gzip $SQLF
+        info_debug_message "Done" "$FUNC" "$MYBACKUP_TOOL"
+        return $SUCCESS
+    fi
+    MSG="Force exit!"
+    info_debug_message_end "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+    return $NOT_SUCCESS
 }
 
