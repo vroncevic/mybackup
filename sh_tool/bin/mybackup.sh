@@ -31,11 +31,11 @@ MYBACKUP_LOG=${MYBACKUP_HOME}/log
 
 .    ${MYBACKUP_HOME}/bin/backup.sh
 
-declare -A MYBACKUP_USAGE=(
-    [USAGE_TOOL]="${MYBACKUP_TOOL}"
-    [USAGE_ARG1]="[OPTION] help"
-    [USAGE_EX_PRE]="# Get this info"
-    [USAGE_EX]="${MYBACKUP_TOOL} help"
+declare -A MYBACKUP_Usage=(
+    [Usage_TOOL]="${MYBACKUP_TOOL}"
+    [Usage_ARG1]="[OPTION] help"
+    [Usage_EX_PRE]="# Get this info"
+    [Usage_EX]="${MYBACKUP_TOOL} help"
 )
 
 declare -A MYBACKUP_LOGGING=(
@@ -67,7 +67,7 @@ TOOL_NOTIFY="false"
 #
 function __mybackup {
     if [ "${HELP}" == "help" ]; then
-        usage MYBACKUP_USAGE
+        usage MYBACKUP_Usage
     fi
     local FUNC=${FUNCNAME[0]} MSG="None" STATUS_CONF STATUS_CONF_UTIL STATUS
     MSG="Loading basic and util configuration!"
