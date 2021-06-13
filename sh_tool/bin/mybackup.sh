@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # @brief   Backup mechanism for MySQL databases
-# @version ver.1.0.0
+# @version ver.1.0
 # @date    Tue Apr 12 11:07:20 CEST 2016
 # @company Frobas IT Department, www.frobas.com 2016
 # @author  Vladimir Roncevic <vladimir.roncevic@frobas.com>
@@ -31,7 +31,7 @@ MYBACKUP_LOG=${MYBACKUP_HOME}/log
 
 .    ${MYBACKUP_HOME}/bin/backup.sh
 
-declare -A MYBACKUP_Usage=(
+declare -A MYBACKUP_USAGE=(
     [Usage_TOOL]="${MYBACKUP_TOOL}"
     [Usage_ARG1]="[OPTION] help"
     [Usage_EX_PRE]="# Get this info"
@@ -67,7 +67,7 @@ TOOL_NOTIFY="false"
 #
 function __mybackup {
     if [ "${HELP}" == "help" ]; then
-        usage MYBACKUP_Usage
+        usage MYBACKUP_USAGE
     fi
     local FUNC=${FUNCNAME[0]} MSG="None" STATUS_CONF STATUS_CONF_UTIL STATUS
     MSG="Loading basic and util configuration!"
