@@ -41,11 +41,11 @@ To install **mybackup** type the following:
 
 .. code-block:: bash
 
-   tar xvzf mybackup-x.y.z.tar.gz
-   cd mybackup-x.y.z
-   cp -R ~/sh_tool/bin/   /root/scripts/mybackup/ver.1.0/
-   cp -R ~/sh_tool/conf/  /root/scripts/mybackup/ver.1.0/
-   cp -R ~/sh_tool/log/   /root/scripts/mybackup/ver.1.0/
+   tar xvzf mybackup-x.y.tar.gz
+   cd mybackup-x.y
+   cp -R ~/sh_tool/bin/   /root/scripts/mybackup/ver.x.y/
+   cp -R ~/sh_tool/conf/  /root/scripts/mybackup/ver.x.y/
+   cp -R ~/sh_tool/log/   /root/scripts/mybackup/ver.x.y/
 
 Or You can use Docker to create image/container.
 
@@ -70,7 +70,7 @@ Code structure:
 
 .. code-block:: bash
 
-   .
+   sh_tool/
    ├── bin/
    │   ├── backup.sh
    │   └── mybackup.sh
