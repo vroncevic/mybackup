@@ -29,9 +29,11 @@ other information that should be provided before the tool is installed.
 
 ### Installation
 
+![Debian Linux OS](https://raw.githubusercontent.com/vroncevic/mybackup/dev/docs/debtux.png)
+
 Navigate to release **[page](https://github.com/vroncevic/mybackup/releases)** download and extract release archive.
 
-To install **mybackup** type the following:
+To install **mybackup** type the following
 
 ```
 tar xvzf mybackup-x.y.tar.gz
@@ -40,7 +42,36 @@ cp -R ~/sh_tool/bin/   /root/scripts/mybackup/ver.x.y/
 cp -R ~/sh_tool/conf/  /root/scripts/mybackup/ver.x.y/
 cp -R ~/sh_tool/log/   /root/scripts/mybackup/ver.x.y/
 ```
-![alt tag](https://raw.githubusercontent.com/vroncevic/mybackup/dev/docs/setup_tree.png)
+
+Self generated setup script and execution
+```
+./mybackup_setup.sh 
+
+[setup] installing App/Tool/Script mybackup
+	Tue 30 Nov 2021 08:05:19 AM CET
+[setup] clean up App/Tool/Script structure
+[setup] copy App/Tool/Script structure
+[setup] remove github editor configuration files
+[setup] set App/Tool/Script permission
+[setup] create symbolic link of App/Tool/Script
+[setup] done
+
+/root/scripts/mybackup/ver.2.0/
+├── bin/
+│   ├── backup.sh
+│   ├── center.sh
+│   ├── display_logo.sh
+│   └── mybackup.sh
+├── conf/
+│   ├── mybackup.cfg
+│   ├── mybackup.logo
+│   └── mybackup_util.cfg
+└── log/
+    └── mybackup.log
+
+3 directories, 8 files
+lrwxrwxrwx 1 root root 46 Nov 30 08:05 /root/bin/mybackup -> /root/scripts/mybackup/ver.2.0/bin/mybackup.sh
+```
 
 Or You can use docker to create image/container.
 
@@ -56,26 +87,54 @@ ln -s /root/scripts/mybackup/ver.x.y/bin/mybackup.sh /root/bin/mybackup
 export PATH=${PATH}:/root/bin/
 
 # Control/operating MySQL server backup
-mybackup
+mybackup help
+                                                                                                                                          
+mybackup ver.2.0
+Tue 30 Nov 2021 08:09:56 AM CET
+
+[check_root] Check permission for current session? [ok]
+[check_root] Done
+
+	                                                   
+	                 _                _                
+	 _ __ ___  _   _| |__   __ _  ___| | ___   _ _ __  
+	| '_ ` _ \| | | | '_ \ / _` |/ __| |/ / | | | '_ \ 
+	| | | | | | |_| | |_) | (_| | (__|   <| |_| | |_) |
+	|_| |_| |_|\__, |_.__/ \__,_|\___|_|\_\\__,_| .__/ 
+	           |___/                            |_|    
+	                                                   
+		Info   github.io/mybackup ver.2.0
+		Issue  github.io/issue
+		Author vroncevic.github.io
+
+  [USAGE] mybackup [OPTIONS]
+  [OPTIONS]
+  [OPTION] help
+  # Get this info
+  mybackup help
+  [help | h] print this option
 ```
 
 ### Dependencies
 
-**mybackup** requires next modules and libraries:
-* mybackup [https://github.com/vroncevic/mybackup](https://github.com/vroncevic/mybackup)
+**mybackup** requires next modules and libraries
+* sh_util [https://github.com/vroncevic/sh_util](https://github.com/vroncevic/sh_util)
 
 ### Shell tool structure
 
 **mybackup** is based on MOP.
 
-Code structure:
+Shell tool structure
 ```
 sh_tool/
 ├── bin/
 │   ├── backup.sh
+│   ├── center.sh
+│   ├── display_logo.sh
 │   └── mybackup.sh
 ├── conf/
 │   ├── mybackup.cfg
+│   ├── mybackup.logo
 │   └── mybackup_util.cfg
 └── log/
     └── mybackup.log
@@ -85,7 +144,7 @@ sh_tool/
 
 [![Documentation Status](https://readthedocs.org/projects/mybackup/badge/?version=latest)](https://mybackup.readthedocs.io/projects/mybackup/en/latest/?badge=latest)
 
-More documentation and info at:
+More documentation and info at
 * [https://mybackup.readthedocs.io/en/latest/](https://mybackup.readthedocs.io/en/latest/)
 * [https://www.gnu.org/software/bash/manual/](https://www.gnu.org/software/bash/manual/)
 
