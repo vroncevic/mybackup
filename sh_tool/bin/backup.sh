@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# @brief   Creating MySQL dump for database
-# @version ver.1.0
-# @date    Tue Apr 12 11:07:20 CEST 2016
-# @company Frobas IT Department, www.frobas.com 2016
-# @author  Vladimir Roncevic <vladimir.roncevic@frobas.com>
+# @brief   MySQL Backup Manager
+# @version ver.2.0
+# @date    Mon 29 Nov 2021 11:44:02 PM CET
+# @company None, free software to use 2021
+# @author  Vladimir Roncevic <elektron.ronca@gmail.com>
 #
 
 #
