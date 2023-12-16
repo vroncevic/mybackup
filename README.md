@@ -6,7 +6,7 @@
 
 Developed in **[bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell))** code: **100%**.
 
-[![mybackup shell checker](https://github.com/vroncevic/mybackup/workflows/mybackup%20shell%20checker/badge.svg)](https://github.com/vroncevic/mybackup/actions?query=workflow%3A%22mybackup+shell+checker%22)
+[![mybackup_shell_checker](https://github.com/vroncevic/mybackup/actions/workflows/mybackup_shell_checker.yml/badge.svg)](https://github.com/vroncevic/mybackup/actions/workflows/mybackup_shell_checker.yml)
 
 The README is used to introduce the tool and provide instructions on
 how to install the tool, any machine dependencies it may have and any
@@ -75,8 +75,6 @@ lrwxrwxrwx 1 root root 46 Nov 30 08:05 /root/bin/mybackup -> /root/scripts/mybac
 
 Or You can use docker to create image/container.
 
-[![mybackup docker checker](https://github.com/vroncevic/mybackup/workflows/mybackup%20docker%20checker/badge.svg)](https://github.com/vroncevic/mybackup/actions?query=workflow%3A%22mybackup+docker+checker%22)
-
 ### Usage
 
 ```
@@ -95,13 +93,17 @@ Tue 30 Nov 2021 08:09:56 AM CET
 [check_root] Check permission for current session? [ok]
 [check_root] Done
 
-	                                                   
-	                 _                _                
-	 _ __ ___  _   _| |__   __ _  ___| | ___   _ _ __  
-	| '_ ` _ \| | | | '_ \ / _` |/ __| |/ / | | | '_ \ 
-	| | | | | | |_| | |_) | (_| | (__|   <| |_| | |_) |
-	|_| |_| |_|\__, |_.__/ \__,_|\___|_|\_\\__,_| .__/ 
-	           |___/                            |_|    
+                                                                          
+                        ██                        ██                      
+                       ░██                       ░██                      
+   ██████████   ██   ██░██       ██████    █████ ░██  ██ ██   ██ ██████   
+  ░░██░░██░░██ ░░██ ██ ░██████  ░░░░░░██  ██░░░██░██ ██ ░██  ░██░██░░░██  
+   ░██ ░██ ░██  ░░███  ░██░░░██  ███████ ░██  ░░ ░████  ░██  ░██░██  ░██  
+   ░██ ░██ ░██   ░██   ░██  ░██ ██░░░░██ ░██   ██░██░██ ░██  ░██░██████   
+   ███ ░██ ░██   ██    ░██████ ░░████████░░█████ ░██░░██░░██████░██░░░    
+  ░░░  ░░  ░░   ██     ░░░░░    ░░░░░░░░  ░░░░░  ░░  ░░  ░░░░░░ ░██       
+               ░░                                               ░░        
+                                                                          
 	                                                   
 		Info   github.io/mybackup ver.2.0
 		Issue  github.io/issue
@@ -152,7 +154,7 @@ More documentation and info at
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Copyright (C) 2016 by [vroncevic.github.io/mybackup](https://vroncevic.github.io/mybackup)
+Copyright (C) 2016 - 2024 by [vroncevic.github.io/mybackup](https://vroncevic.github.io/mybackup)
 
 **mybackup** is free software; you can redistribute it and/or modify
 it under the same terms as Bash itself, either Bash version 4.2.47 or,
