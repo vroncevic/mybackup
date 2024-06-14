@@ -1,6 +1,6 @@
-<img align="right" src="https://raw.githubusercontent.com/vroncevic/mybackup/dev/docs/mybackup_logo.png" width="25%">
-
 # Backup mechanism MySQL DB
+
+<img align="right" src="https://raw.githubusercontent.com/vroncevic/mybackup/dev/docs/mybackup_logo.png" width="25%">
 
 **mybackup** is shell tool for controlling/operating MySQL server backup.
 
@@ -35,7 +35,7 @@ Navigate to release **[page](https://github.com/vroncevic/mybackup/releases)** d
 
 To install **mybackup** type the following
 
-```
+```bash
 tar xvzf mybackup-x.y.tar.gz
 cd mybackup-x.y
 cp -R ~/sh_tool/bin/   /root/scripts/mybackup/ver.x.y/
@@ -44,7 +44,8 @@ cp -R ~/sh_tool/log/   /root/scripts/mybackup/ver.x.y/
 ```
 
 Self generated setup script and execution
-```
+
+```bash
 ./mybackup_setup.sh 
 
 [setup] installing App/Tool/Script mybackup
@@ -77,7 +78,7 @@ Or You can use docker to create image/container.
 
 ### Usage
 
-```
+```bash
 # Create symlink for shell tool
 ln -s /root/scripts/mybackup/ver.x.y/bin/mybackup.sh /root/bin/mybackup
 
@@ -127,7 +128,8 @@ Tue 30 Nov 2021 08:09:56 AM CET
 **mybackup** is based on MOP.
 
 Shell tool structure
-```
+
+```bash
 sh_tool/
 ├── bin/
 │   ├── backup.sh
