@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # @brief   MySQL Backup Manager
-# @version ver.2.0
+# @version ver.3.0
 # @date    Mon 29 Nov 2021 11:44:02 PM CET
 # @company None, free software to use 2021
 # @author  Vladimir Roncevic <elektron.ronca@gmail.com>
@@ -11,8 +11,6 @@ UTIL_VERSION=ver.1.0
 UTIL=${UTIL_ROOT}/sh_util/${UTIL_VERSION}
 UTIL_LOG=${UTIL}/log
 
-.    ${UTIL}/bin/devel.sh
-.    ${UTIL}/bin/usage.sh
 .    ${UTIL}/bin/check_root.sh
 .    ${UTIL}/bin/check_tool.sh
 .    ${UTIL}/bin/check_op.sh
@@ -21,21 +19,15 @@ UTIL_LOG=${UTIL}/log
 .    ${UTIL}/bin/load_util_conf.sh
 .    ${UTIL}/bin/send_mail.sh
 .    ${UTIL}/bin/progress_bar.sh
+.    ${UTIL}/bin/display_logo.sh
 
 MYBACKUP_TOOL=mybackup
-MYBACKUP_VERSION=ver.2.0
+MYBACKUP_VERSION=ver.3.0
 MYBACKUP_HOME=${UTIL_ROOT}/${MYBACKUP_TOOL}/${MYBACKUP_VERSION}
 MYBACKUP_CFG=${MYBACKUP_HOME}/conf/${MYBACKUP_TOOL}.cfg
 MYBACKUP_UTIL_CFG=${MYBACKUP_HOME}/conf/${MYBACKUP_TOOL}_util.cfg
 MYBACKUP_LOGO=${MYBACKUP_HOME}/conf/${MYBACKUP_TOOL}.logo
 MYBACKUP_LOG=${MYBACKUP_HOME}/log
-
-tabs 4
-CONSOLE_WIDTH=$(stty size | awk '{print $2}')
-
-.    ${MYBACKUP_HOME}/bin/center.sh
-.    ${MYBACKUP_HOME}/bin/display_logo.sh
-.    ${MYBACKUP_HOME}/bin/backup.sh
 
 declare -A MYBACKUP_USAGE=(
     [USAGE_TOOL]="${MYBACKUP_TOOL}"
@@ -57,9 +49,51 @@ declare -A PB_STRUCTURE=(
     [SLEEP]=0.01
 )
 
+declare -A MYBACKUP_LOGO_DATA=(
+    [OWNER]="vroncevic"
+    [REPO]="${MYBACKUP_TOOL}"
+    [VERSION]="${MYBACKUP_VERSION}"
+    [LOGO]="${MYBACKUP_LOGO}"
+)
+
 TOOL_DBG="false"
 TOOL_LOG="false"
 TOOL_NOTIFY="false"
+
+#
+# @brief  Creating MySQL dump for database
+# @param  Value required SQL file name and database name
+# @retval Success return 0, else 1
+#
+# @usage
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#
+# __backup "SQL_FILE" "$DB"
+# STATUS=$?
+#
+# if [ $STATUS -eq $SUCCESS ]; then
+#    # true
+# else
+#    # false
+# fi
+#
+function __backup {
+    local MYDUMP=$1 SQLF=$2 DB=$3 FUNC=${FUNCNAME[0]} MSG="None" STATUS
+    if [[ -n "${MYDUMP}" && -n "${SQLF}" && -n "${DB}" ]]; then
+        MSG="Run backup mechanism"
+        info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+        unalias rm 2> /dev/null
+        rm ${SQLF} 2> /dev/null
+        rm ${SQLF}.gz 2> /dev/null
+        eval "${MYDUMP} -uroot ${DB} > ${SQLF}"
+        gzip $SQLF
+        info_debug_message "Done" "$FUNC" "$MYBACKUP_TOOL"
+        return $SUCCESS
+    fi
+    MSG="Force exit!"
+    info_debug_message_end "$MSG" "$FUNC" "$MYBACKUP_TOOL"
+    return $NOT_SUCCESS
+}
 
 #
 # @brief   Main function
@@ -73,11 +107,11 @@ TOOL_NOTIFY="false"
 #
 function __mybackup {
     local HELP=$1
-    display_logo
     if [ "${HELP}" == "help" ]; then
         usage MYBACKUP_USAGE
         exit 0
     fi
+    display_logo MYBACKUP_LOGO_DATA
     local FUNC=${FUNCNAME[0]} MSG="None" STATUS_CONF STATUS_CONF_UTIL STATUS
     MSG="Loading basic and util configuration!"
     info_debug_message "$MSG" "$FUNC" "$MYBACKUP_TOOL"
@@ -118,7 +152,7 @@ function __mybackup {
         RESULT=`mysql -uroot -p --skip-column-names -e "${SHDBS} '${DB}'"`
         if [ "${RESULT}" == "${DB}" ]; then
             SQL="${MYSQLDUMPDIR}/${FILE}_${DB}"
-            backup "$SQL" "$DB"
+            __backup "${MYDUMP}" "$SQL" "$DB"
             STATUS=$?
             if [ $STATUS -eq $SUCCESS ]; then
                 MSG="Backup [${SQL}.gz] was created"
